@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: kaaj-ai-backend
+    env: python
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        value: sqlite:///./kaaj_analyzer.db
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: LLM_MODEL
+        value: gpt-4o-mini
