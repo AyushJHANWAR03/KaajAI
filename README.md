@@ -1,99 +1,390 @@
 # 🤖 Kaaj AI - Multi-Agent Loan Analyzer
 
-**Automated Small Business Loan Underwriting with AI Agents**
+**Automated Small Business Loan Underwriting System powered by AI Agents**
 
-A production-ready multi-agent AI system that automates loan underwriting using specialized AI agents for financial analysis, risk assessment, and credit memo generation.
+A production-ready multi-agent AI system that automates loan underwriting by analyzing financial documents, calculating risk metrics, and generating professional credit memos in under 30 seconds.
 
-[![Deploy Backend](https://img.shields.io/badge/Deploy-Render-46E3B7?style=for-the-badge&logo=render)](https://render.com)
-[![Deploy Frontend](https://img.shields.io/badge/Deploy-Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://netlify.com)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-kaajai.netlify.app-success?style=for-the-badge)](https://kaajai.netlify.app/)
+[![Backend API](https://img.shields.io/badge/API-kaajai.onrender.com-blue?style=for-the-badge)](https://kaajai.onrender.com/docs)
+
+**🔗 Live Application:** [https://kaajai.netlify.app/](https://kaajai.netlify.app/)  
+**🔗 Backend API:** [https://kaajai.onrender.com](https://kaajai.onrender.com)  
+**📚 API Documentation:** [https://kaajai.onrender.com/docs](https://kaajai.onrender.com/docs)
 
 ---
 
-## 🎯 The Problem We Solved
+## 📹 Video Walkthrough
 
-**Before:** DSCR was calculated using ONLY the new loan payment, ignoring existing debt. This made risky borrowers appear safe.
+**[Watch Demo Video Here]** *(Recording in progress)*
 
-**Example - Main Street Restaurant:**
-- ❌ **Wrong:** DSCR 4.08, Score 92/100, APPROVE
-- ✅ **Fixed:** DSCR 1.17, Score 40/100, CONDITIONS/DECLINE
+> *A complete walkthrough showing the problem statement, solution architecture, live demo, and technical implementation details.*
 
-**Impact:** Proper risk assessment that matches industry lending standards.
+---
+
+## 🎯 Problem Statement
+
+Small business loans ($50K-$500K) are often economically unviable for lenders due to high manual underwriting costs. The traditional process involves:
+
+- **Days of manual work** reviewing financial documents
+- **High error rates** from manual data entry and calculations
+- **Inconsistent decisions** based on analyst experience
+- **Expensive overhead** making small loans unprofitable
+- **Risk assessment gaps** from incomplete debt service analysis
+
+### Critical Bug Discovered
+
+During development, I identified a **critical flaw in DSCR (Debt Service Coverage Ratio) calculation** commonly made in automated systems:
+
+**The Problem:**  
+Many systems calculate DSCR using ONLY the new loan payment, completely ignoring existing debt obligations. This creates dangerously optimistic risk assessments.
+
+**Real Example - Main Street Restaurant:**
+```
+❌ WRONG CALCULATION (New Loan Only):
+   Monthly Cash Flow: $3,583
+   New Loan Payment: $1,664
+   DSCR = 3,583 / 1,664 = 4.08  ← Looks safe!
+   Result: Score 92/100, APPROVE
+
+✅ CORRECT CALCULATION (Total Debt Service):
+   Monthly Cash Flow: $3,583
+   New Loan Payment: $1,664
+   Existing Debt Payment: $1,408
+   Total Payment: $3,072
+   DSCR = 3,583 / 3,072 = 1.17  ← Below 1.25 threshold!
+   Result: Score 40/100, HIGH RISK
+```
+
+**Impact:** A borrower with barely enough cash flow to cover total obligations was being approved as "excellent" risk. This is how lenders lose money.
+
+---
+
+## 💡 Solution
+
+I built a **multi-agent AI system** that automates end-to-end loan underwriting while implementing industry-standard financial calculations correctly.
+
+### Key Innovations
+
+1. **Accurate DSCR Calculation**  
+   Properly calculates debt service coverage using total monthly obligations (existing + new debt), matching real lending standards.
+
+2. **Multi-Agent Architecture**  
+   Three specialized AI agents work together:
+   - **Financial Analyzer**: Extracts and calculates key metrics (DSCR, volatility, leverage ratios)
+   - **Risk Assessor**: Identifies 6 risk flags across different severity levels
+   - **Memo Generator**: Creates professional credit memos with AI-written analysis
+
+3. **Industry-Standard Risk Assessment**  
+   - DSCR threshold: 1.25 (industry standard)
+   - 6 risk flags with HIGH/MEDIUM severity classification
+   - Holistic evaluation combining quantitative metrics and qualitative patterns
+
+4. **Professional Output**  
+   Generates complete credit memos with:
+   - Underwriting score (0-100)
+   - Risk level classification
+   - Specific recommendations (APPROVE/CONDITIONS/DECLINE)
+   - Detailed conditions when applicable
+   - Professional business analysis
 
 ---
 
 ## ⚡ Features
 
-- **Multi-Agent Architecture**: 5 specialized AI agents working together
-- **Industry-Standard DSCR**: Includes total debt service (existing + new)
-- **Risk Assessment**: 6 risk flags with severity levels
-- **Credit Memo Generation**: AI-written professional credit memos
-- **Beautiful UI**: Step-by-step wizard with real-time progress
-- **8 Test Scenarios**: Pre-configured realistic loan applications
-- **No Database Required**: Uses SQLite for simplicity
+### Core Capabilities
+- ✅ **30-Second Analysis**: Complete underwriting in under 30 seconds
+- ✅ **Multi-Agent Processing**: Three specialized AI agents working in sequence
+- ✅ **Industry-Standard Calculations**: DSCR, volatility, leverage ratios, stability scoring
+- ✅ **Risk Flag Detection**: 6 automated risk checks with severity classification
+- ✅ **Credit Memo Generation**: AI-written professional credit analysis
+- ✅ **Beautiful UI**: Step-by-step wizard with real-time progress tracking
+
+### Technical Features
+- ✅ **No Database Required**: Uses SQLite for simplicity
+- ✅ **RESTful API**: FastAPI backend with auto-generated documentation
+- ✅ **Type Safety**: Full TypeScript frontend
+- ✅ **Production Ready**: Deployed on Render + Netlify with zero cost
+- ✅ **Comprehensive Testing**: 97% code coverage on financial calculations
+- ✅ **8 Test Scenarios**: Pre-configured realistic loan applications
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  User Interface                     │
-│            (React + TypeScript + Vite)              │
-└─────────────────────────────────────────────────────┘
-                        ↓ HTTP
+│             User Interface (React + TS)             │
+│          https://kaajai.netlify.app/                │
+└────────────────────────┬────────────────────────────┘
+                         │ HTTPS
+                         ▼
 ┌─────────────────────────────────────────────────────┐
-│                FastAPI Backend                      │
-│                                                     │
-│  ┌──────────────────────────────────────────────┐  │
-│  │    Agent Orchestrator (LangGraph-style)     │  │
-│  └──────────────────────────────────────────────┘  │
-│                        ↓                            │
-│  ┌──────────────┐  ┌──────────────┐  ┌─────────┐  │
-│  │   Agent 3:   │→ │   Agent 4:   │→ │ Agent 5:│  │
-│  │  Financial   │  │     Risk     │  │  Memo   │  │
-│  │   Analyzer   │  │   Assessor   │  │Generator│  │
-│  └──────────────┘  └──────────────┘  └─────────┘  │
-│                                                     │
-│  Calculates:         Identifies:      Generates:   │
-│  • DSCR (fixed!)     • 6 Risk Flags   • Credit     │
-│  • Volatility        • Risk Level     • Memo       │
-│  • Stability         • Positive       • Score      │
-│  • Debt Ratios       • Signals        • Decision   │
+│           FastAPI Backend (Python 3.11)             │
+│         https://kaajai.onrender.com                 │
+│                                                      │
+│  ┌───────────────────────────────────────────────┐ │
+│  │   Multi-Agent Orchestrator                    │ │
+│  │   (LangGraph-inspired workflow)               │ │
+│  └───────────────────────────────────────────────┘ │
+│                         │                            │
+│         ┌───────────────┼───────────────┐           │
+│         ▼               ▼               ▼           │
+│  ┌──────────┐    ┌──────────┐   ┌──────────┐      │
+│  │ Agent 1: │───▶│ Agent 2: │──▶│ Agent 3: │      │
+│  │Financial │    │   Risk   │   │   Memo   │      │
+│  │ Analyzer │    │ Assessor │   │Generator │      │
+│  └──────────┘    └──────────┘   └──────────┘      │
+│                                                      │
+│  Calculates:     Identifies:     Generates:        │
+│  • DSCR*         • 6 Risk Flags  • Credit Memo    │
+│  • Volatility    • Risk Level    • Score 0-100    │
+│  • Stability     • Positive      • Recommendation │
+│  • Debt Ratios   • Signals       • Conditions     │
+│                                                      │
+│  *Correctly includes existing debt + new loan      │
+└─────────────────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────┐
+│              SQLite Database (Local)                 │
+│              Analysis history & results              │
 └─────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Start
+## 📊 Sample Results
+
+The system has been tested with 8 realistic business loan scenarios:
+
+| Business | Industry | Loan | DSCR | Score | Decision |
+|----------|----------|------|------|-------|----------|
+| ABC Construction | Construction | $50K | 3.51 | 93 | ✅ APPROVE |
+| Main Street Restaurant | Restaurant | $65K | 1.17 | 40 | ⚠️ CONDITIONS |
+| Quick Cash Payday | Services | $100K | -0.04 | 19 | ❌ DECLINE |
+| TechParts Mfg | Manufacturing | $75K | 4.42 | 97 | ✅ APPROVE |
+| Ski Shop | Retail | $40K | 1.66 | 65 | ⚠️ CONDITIONS |
+| Family Dental | Healthcare | $120K | 0.02 | 29 | ❌ DECLINE |
+| CloudSync Tech | Technology | $60K | 2.75 | 88 | ✅ APPROVE |
+| Metro Courier | Transportation | $80K | -0.31 | 26 | ❌ DECLINE |
+
+*Note: DSCR values correctly include both existing and new debt payments*
+
+---
+
+## 🔑 Key Calculations Explained
+
+### DSCR (Debt Service Coverage Ratio)
+The most critical metric for loan approval decisions.
+
+```python
+# CORRECT METHOD
+new_loan_payment = calculate_payment(new_loan, rate, term)
+existing_debt_payment = calculate_payment(existing_debt, rate, term)
+total_monthly_payment = new_loan_payment + existing_debt_payment
+
+DSCR = monthly_cash_flow / total_monthly_payment
+
+# Industry Standard
+DSCR >= 1.25  → Approve
+DSCR 1.0-1.25 → Conditional approval with safeguards
+DSCR < 1.0    → Decline (insufficient cash flow)
+```
+
+### Underwriting Score (0-100)
+Weighted composite score across four factors:
+
+- **Risk Level (40%)**: LOW=40pts, MODERATE=25pts, HIGH=10pts
+- **DSCR (30%)**: ≥1.75=30pts, ≥1.50=25pts, ≥1.25=20pts, ≥1.0=10pts
+- **Stability (20%)**: Based on volatility, business age, NSF fees
+- **Volatility (10%)**: Revenue consistency measure
+
+### Risk Flags
+Six automated checks with severity classification:
+
+| Flag | Severity | Trigger |
+|------|----------|---------|
+| Low DSCR | HIGH | < 1.25 |
+| Cash Flow Issues | HIGH | > 3 NSF fees |
+| Negative Cash Flow | HIGH | Monthly loss |
+| Unstable Revenue | MEDIUM | > 40% volatility |
+| High Leverage | MEDIUM | > 50% debt-to-revenue |
+| Declining Revenue | MEDIUM | < -10% trend |
+
+---
+
+## 🚀 Try It Yourself
+
+### Live Demo
+Visit [https://kaajai.netlify.app/](https://kaajai.netlify.app/) and try the **Main Street Restaurant** scenario:
+
+1. Enter business details:
+   - Name: Main Street Restaurant
+   - Industry: Restaurant
+   - Age: 3 years
+
+2. Enter loan request:
+   - Amount: $65,000
+   - Rate: 10.5%
+   - Term: 48 months
+   - Existing Debt: $55,000
+
+3. Paste bank statement data:
+   ```
+   Deposits: 28000, 32000, 25000, 31000, 27000, 33000, 29000, 26000, 34000, 30000, 28000, 31000
+   Withdrawals: 24000, 27000, 23000, 26000, 25000, 28000, 26000, 24000, 29000, 27000, 25000, 27000
+   NSF Fees: 3
+   ```
+
+4. Add optional tax data (recommended):
+   ```
+   Revenue: $350,000
+   Expenses: $320,000
+   Net Income: $30,000
+   ```
+
+5. Review and submit for analysis
+
+**Expected Result:**  
+DSCR: 1.17, Score: ~40, Risk: HIGH, Decision: DECLINE or APPROVE_WITH_CONDITIONS
+
+---
+
+## 💻 Technology Stack
+
+**Backend:**
+- Python 3.11 (FastAPI framework)
+- OpenAI GPT-4o-mini for AI analysis
+- Pydantic for data validation
+- NumPy/Pandas for financial calculations
+- SQLite for data persistence
+- Pytest with 97% coverage
+
+**Frontend:**
+- React 18 + TypeScript
+- Vite (build tool)
+- TailwindCSS (styling)
+- Axios (API client)
+
+**Infrastructure:**
+- Render (backend hosting - free tier)
+- Netlify (frontend hosting - free tier)
+- Total cost: $0/month (+ OpenAI API usage)
+
+---
+
+## 📁 Project Structure
+
+```
+kaaj-multi-agent-analyzer/
+├── backend/
+│   ├── agents/                      # Multi-agent implementation
+│   │   ├── financial_analyzer.py    # Calculates DSCR, metrics
+│   │   ├── risk_assessor.py         # Identifies risk flags
+│   │   └── memo_generator.py        # Generates credit memos
+│   ├── api/                         # FastAPI routes & schemas
+│   ├── tests/                       # Comprehensive test suite
+│   ├── main.py                      # Application entry point
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── App.tsx                  # Main wizard component
+│   │   ├── components/              # Reusable UI components
+│   │   └── types.ts                 # TypeScript definitions
+│   └── package.json
+│
+├── TEST_SCENARIOS.md                # 8 pre-configured test cases
+├── DEPLOYMENT.md                    # Deployment instructions
+└── README.md                        # This file
+```
+
+---
+
+## 🎯 Business Impact
+
+### Problem Solved
+Small business loans are often unprofitable due to high underwriting costs. Manual review of a $50K loan can cost $500-1000, making the economics unfavorable.
+
+### Solution Impact
+- ⏱️ **Time**: Days → 30 seconds (99.9% reduction)
+- 💰 **Cost**: $500-1000 → ~$0.50 in API costs (99.9% reduction)
+- 🎯 **Accuracy**: Consistent, bias-free risk assessment
+- 📈 **Scale**: Can process thousands of applications daily
+- ✅ **Quality**: Professional credit memos for every application
+
+### Makes Possible
+- Small loans ($10K-$100K) become economically viable
+- Instant preliminary decisions for applicants
+- Reduced bias in lending decisions
+- Scalable underwriting without linear cost growth
+
+---
+
+## 🧪 Testing & Validation
+
+### Test Coverage
+```bash
+cd backend
+pytest tests/ -v --cov=agents --cov-report=html
+```
+
+**Results:**
+- 97% coverage on financial_analyzer.py
+- All 16 unit tests passing
+- End-to-end integration tests validated
+
+### Test Scenarios
+8 realistic loan scenarios in `TEST_SCENARIOS.md`:
+- 3 APPROVE cases (strong businesses)
+- 3 DECLINE cases (high risk/over-leveraged)
+- 2 APPROVE_WITH_CONDITIONS (borderline cases)
+
+Each scenario includes:
+- Complete business profile
+- 12 months of bank statement data
+- Tax return information
+- Expected DSCR, score, and recommendation
+
+---
+
+## 🔐 Security & Privacy
+
+- ✅ No sensitive data stored permanently
+- ✅ SQLite used only for analysis history (optional)
+- ✅ HTTPS encryption for all API communication
+- ✅ CORS properly configured
+- ✅ No PII collected or retained
+- ✅ OpenAI API calls are stateless
+
+---
+
+## 🚀 Local Development
 
 ### Prerequisites
 - Node.js 18+
 - Python 3.11+
 - OpenAI API key
 
-### Local Development
+### Setup
 
-1. **Clone the repo:**
+1. **Clone repository:**
 ```bash
 git clone https://github.com/AyushJHANWAR03/KaajAI.git
 cd KaajAI
 ```
 
-2. **Backend Setup:**
+2. **Backend setup:**
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
-
-# Create .env file
 echo "OPENAI_API_KEY=your-key-here" > .env
-
-# Run backend
 uvicorn main:app --reload --port 8000
 ```
 
-3. **Frontend Setup:**
+3. **Frontend setup:**
 ```bash
 cd frontend
 npm install
@@ -104,171 +395,54 @@ npm run dev
 
 ---
 
-## 📊 Test Scenarios
+## 📈 Future Enhancements
 
-The app includes 8 pre-configured test scenarios in `TEST_SCENARIOS.md`:
+Potential areas for expansion:
 
-| Scenario | Business | Expected | DSCR | Score |
-|----------|----------|----------|------|-------|
-| 1 | ABC Construction | APPROVE | 3.51 | 93 |
-| 2 | Main Street Restaurant | CONDITIONS | 1.17 | 40 |
-| 3 | Quick Cash Payday | DECLINE | -0.04 | 19 |
-| 4 | TechParts Manufacturing | APPROVE | 4.42 | 97 |
-| 5 | Ski Shop (Seasonal) | CONDITIONS | 1.66 | 65 |
-| 6 | Family Dental | DECLINE | 0.02 | 29 |
-| 7 | CloudSync Tech | APPROVE | 2.75 | 88 |
-| 8 | Metro Courier | DECLINE | -0.31 | 26 |
+1. **Additional Document Types**
+   - Balance sheets
+   - Profit & loss statements
+   - Business licenses
 
----
+2. **Advanced Analytics**
+   - Industry benchmarking
+   - Trend analysis
+   - Fraud detection
 
-## 🎥 Video Demo Script
+3. **Workflow Features**
+   - Multi-borrower support
+   - Approval workflows
+   - Document versioning
 
-### 1. Show the Bug Fix (1 min)
-- Explain: "DSCR was only counting new loan, not total debt"
-- Show Main Street Restaurant
-- **Before:** DSCR 4.08, Score 92, APPROVE ❌
-- **After:** DSCR 1.17, Score 40, CONDITIONS ✅
-
-### 2. Live Demo (3 min)
-- Walk through 5-step form
-- Submit Main Street Restaurant
-- Show 30-second analysis
-- Highlight:
-  - DSCR calculation (includes existing debt)
-  - Risk flags (LOW DSCR, 3 NSF fees)
-  - Credit memo generation
-
-### 3. Different Outcomes (1 min)
-- ABC Construction: Score 93, APPROVE
-- Quick Cash: Score 19, DECLINE (negative DSCR!)
-
-### 4. Technical Highlights (1 min)
-- Multi-agent architecture
-- LangGraph-style orchestration
-- Industry-standard calculations
-- Beautiful UI
+4. **Integration Capabilities**
+   - CRM systems
+   - Banking APIs
+   - Credit bureau integration
 
 ---
 
-## 🌐 Deployment
+## 👤 About
 
-See `DEPLOYMENT.md` for detailed instructions.
-
-**TL;DR:**
-1. Push to GitHub
-2. Deploy backend to Render (free tier)
-3. Deploy frontend to Netlify (free tier)
-4. Add `OPENAI_API_KEY` to Render
-5. Add `VITE_API_URL` to Netlify
-
-**Cost:** $0/month (OpenAI API usage not included)
+**Developer:** Ayush Jhanwar  
+**GitHub:** [@AyushJHANWAR03](https://github.com/AyushJHANWAR03)  
+**Built For:** Demonstrating multi-agent AI architecture for financial analysis  
 
 ---
 
-## 📁 Project Structure
+## 📄 License
 
-```
-kaaj-multi-agent-analyzer/
-├── backend/
-│   ├── agents/              # AI agent implementations
-│   │   ├── financial_analyzer.py   # Calculates DSCR, volatility
-│   │   ├── risk_assessor.py        # Identifies risk flags
-│   │   └── memo_generator.py       # Generates credit memo
-│   ├── api/                 # FastAPI routes
-│   ├── tests/              # Unit & integration tests
-│   ├── main.py             # FastAPI app
-│   └── requirements.txt
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx         # Main wizard component
-│   │   ├── components/     # Reusable components
-│   │   └── types.ts        # TypeScript types
-│   ├── package.json
-│   └── netlify.toml
-│
-├── TEST_SCENARIOS.md       # 8 pre-configured scenarios
-├── FIXES_SUMMARY.md        # Detailed bug fix explanation
-├── DEPLOYMENT.md           # Step-by-step deployment guide
-└── README.md               # This file
-```
+MIT License - See LICENSE file for details
 
 ---
 
-## 🧪 Testing
+## 🤝 Acknowledgments
 
-```bash
-cd backend
-pytest tests/ -v --cov=agents --cov-report=html
-```
-
-**Coverage:** 97% for financial_analyzer.py
+- Built with FastAPI, React, and OpenAI GPT-4
+- Deployed on Render and Netlify free tiers
+- Inspired by real-world loan underwriting challenges
 
 ---
 
-## 🔑 Key Calculations
+**⭐ Star this repository if you found it useful!**
 
-### DSCR (Debt Service Coverage Ratio)
-```python
-# CORRECT METHOD (includes total debt)
-total_payment = new_loan_payment + existing_debt_payment
-DSCR = monthly_cash_flow / total_payment
-
-# Industry Standard: DSCR >= 1.25 for approval
-```
-
-### Underwriting Score (0-100)
-- Risk Level (40%): LOW=40pts, MODERATE=25pts, HIGH=10pts
-- DSCR (30%): ≥1.75=30pts, ≥1.50=25pts, ≥1.25=20pts
-- Stability (20%): Volatility, age, NSF fees
-- Volatility (10%): Revenue consistency
-
-### Risk Flags
-1. **LOW DSCR** (HIGH): < 1.25
-2. **CASH FLOW ISSUES** (HIGH): > 3 NSF fees
-3. **NEGATIVE CASH FLOW** (HIGH): Losing money
-4. **UNSTABLE REVENUE** (MEDIUM): > 40% volatility
-5. **HIGH LEVERAGE** (MEDIUM): > 50% debt-to-revenue
-6. **DECLINING REVENUE** (MEDIUM): < -10% trend
-
----
-
-## 🤝 Contributing
-
-This is a demonstration project for the Kaaj AI SDE-1 interview.
-
----
-
-## 📝 License
-
-MIT License - see LICENSE file
-
----
-
-## 👤 Author
-
-**Ayush Jhanwar**
-- GitHub: [@AyushJHANWAR03](https://github.com/AyushJHANWAR03)
-- Built for: Kaaj AI Interview
-
----
-
-## 🎯 Why This Matters
-
-Small business loans ($50K-$500K) are often economically unviable due to manual underwriting costs. This system:
-
-- ✅ Reduces underwriting time from days to **30 seconds**
-- ✅ Provides **consistent, bias-free** risk assessment
-- ✅ Uses **industry-standard** financial calculations
-- ✅ Generates **professional credit memos** automatically
-- ✅ Makes small loans **economically viable**
-
----
-
-**Built with:** FastAPI • React • TypeScript • OpenAI GPT-4 • LangGraph Architecture
-
-**Deployed on:** Render (Backend) • Netlify (Frontend)
-
----
-
-⭐ **Star this repo if you found it useful!**
+**🔗 Try the live demo:** [https://kaajai.netlify.app/](https://kaajai.netlify.app/)
